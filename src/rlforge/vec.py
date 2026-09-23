@@ -38,6 +38,5 @@ def build_vec_env(spec, num_cpu, monitor_path=None, seed=0):
 
 def build_play_env(spec, seed=0):
     """A single on-screen env for watching a trained policy."""
-    extra = {"screen_resolution": spec.screen_resolution} if spec.screen_resolution else {}
-    venv = DummyVecEnv([make_env(spec, 0, seed, render_mode= RenderModes.DISPLAY_WINDOW, **extra)])
+    venv = DummyVecEnv([make_env(spec, 0, seed, render_mode=RenderModes.DISPLAY_WINDOW, **spec.play_kwargs)])
     return _stack(venv, spec)

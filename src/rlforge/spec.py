@@ -4,7 +4,8 @@ Adding a game means writing one of these in `games/<name>/game.py`.
 Nothing in `core/` imports a game -- the spec is always passed in.
 """
 
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import Any, Callable
 
 
@@ -31,8 +32,8 @@ class GameSpec:
     # between training and play or the loaded model sees the wrong shape.
     frame_stack: int = 4
 
-    # Window size when watching with play(), e.g. "RES_1280X720". A game may
-    # pass its own StrEnum here -- a StrEnum is a str.
-    # None = the game's own default. Only passed to envs that accept it, and
-    # training ignores it -- frames get resized to RESIZE either way.
-    screen_resolution: str | None = None
+    # Extra gym.make() options used only by play(), e.g. ViZDoom's
+    # {"screen_resolution": "RES_1280X720", "sound_enabled": True}.
+    # Training ignores them: frames get resized to RESIZE either way, and
+    # windows/sound would only slow the parallel envs down.
+    play_kwargs: Mapping[str, Any] = field(default_factory=dict)

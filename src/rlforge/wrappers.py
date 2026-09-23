@@ -1,5 +1,5 @@
 import gymnasium as gym
-
+from gymnasium import spaces
 
 class StallLimit(gym.Wrapper):
     """End the episode if `progress_key` hasn't improved in `patience` steps."""
@@ -21,3 +21,17 @@ class StallLimit(gym.Wrapper):
             if self.stale >= self.patience:
                 truncated = True
         return obs, reward, terminated, truncated, info
+
+
+class SelectKey(gym.ObservationWrapper):
+    """Keep one entry of a Dict observation, e.g. ViZDoom's "screen"."""
+
+    def __init__(self, env: gym.Env, key: str):
+        super().__init__(env)
+        if not isinstance(env.observation_space, spaces.Dict):
+            raise TypeError(f"SelectKey needs a Dict observation space, got {env.observation_space}")
+        self.key = key
+        self.observation_space = env.observation_space[key]
+
+    def observation(self, observation):
+        return observation[self.key]
